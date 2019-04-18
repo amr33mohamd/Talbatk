@@ -37,7 +37,7 @@ export default class Meals extends React.Component {
 			fontSize: 16
 		}
 	});
-	componentWillMount() {
+	componentDidMount() {
 		AsyncStorage.getItem('userid').then(id => {
 			fetch(Server.dest + '/api/get-my-tickets?user_id=' + id)
 				.then(res => res.json())

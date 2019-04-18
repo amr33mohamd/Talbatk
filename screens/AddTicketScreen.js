@@ -51,6 +51,8 @@ export default class SingleTicketScreen extends React.Component {
 		}))
 		AsyncStorage.getItem('userid').then((userid) => {
 			fetch(Server.dest + '/api/ticket-open?user_id=' + userid + '&message=' + messages[0].text + '&title=' + messages[0].text).then((res) => res.json()).then(() => {
+				alert('تم ارسال شكواك بنجاح')
+				this.props.navigation.navigate('MyTicketsScreen')
 			})
 		})
 
