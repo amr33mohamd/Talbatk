@@ -146,7 +146,7 @@ onPushNotiOpen = () => {
 							if (val === null) return;
 
 							this.setState({ storeOrdersFetched: false });
-							this.fetchStoreOrders(parseInt(val));
+							this.fetchStoreOrders(parseInt(val))
 						});
 					}
 				});
@@ -159,6 +159,14 @@ onPushNotiOpen = () => {
 			if(storeid) this.fetchStoreOrders(parseInt(storeid));
 		})*/
 	// }
+	componentDidMount(){
+		AsyncStorage.getItem('storeid').then(val => {
+			if (val === null) return;
+
+			this.setState({ storeOrdersFetched: false });
+			setInterval(()=>{this.fetchStoreOrders(parseInt(val))},1000);
+		});
+	}
 
 	componentWillUnmount() {
 		// Remove the listener when you are done
@@ -187,7 +195,7 @@ onPushNotiOpen = () => {
 					var rowNum = 0;
 					var orderStates = [];
 					resJson.orders.map((order) => {
-						data.push([order[0], this.location(order[1]), order[2], this.SeeMore(order[3], order[6], order[7], order[8], order[5], order[2], order[9], order[10]), this.order_status_changer(order[4], order[5], rowNum++)]);
+						data.push([order[0], this.location(order[1]), this.SeeMore(order[3], order[6], order[7], order[8], order[5], order[2], order[9], order[10]), this.order_status_changer(order[4], order[5], rowNum++)]);
 						//console.log('pushed', order[4], 'at', rowNum-1);
 						orderStates.push(order[4])
 					})
@@ -221,7 +229,7 @@ onPushNotiOpen = () => {
 				textAlign: 'center',
 				justifyContent: 'center'
 			}}
-			>المزيد </Text>
+			>تفاصيل الطلب </Text>
 		</TouchableOpacity>
 
 	);
@@ -359,8 +367,27 @@ onPushNotiOpen = () => {
 		}
 
 	}
+
+	change_status = (status)=>{
+		AsyncStorage.getItem('storeid').then((store_id) => {
+			fetch(`${Server.dest}/api/change_store_status?store_id=${store_id}&status=${status}`, {
+				headers: { 'Cache-Control': 'no-cache' }
+			})
+				.then(res => res.json())
+				.then(() => {
+					if(status == 1){
+						alert('تم فتح المحل')
+					}
+					else {
+						alert('تم غلق المحل')
+					}
+				});
+		})
+	}
+
 	order_status_changer = (value, id, rowNum) => {
 		let TheSelect = null;
+		let oldOrderState = this.state.orderStates[rowNum];
 
 		function resetText(oldOrderState) {
 			setTimeout(() => {
@@ -369,50 +396,30 @@ onPushNotiOpen = () => {
 		}
 
 		return (
-			<Select
-				ref={(c) => TheSelect = c}
-				defaultText={selectLabels[value]}
-				style={{ borderWidth: 0 }}
-				textStyle={{}}
-				backdropStyle={{ backgroundColor: "white" }}
-				optionListStyle={{ backgroundColor: "white" }}
-				onSelect={(itemValue) => {
-					let oldOrderState = this.state.orderStates[rowNum];
+			<View>
+			<TouchableOpacity >
+				<Text style={{textAlign:'center',color:(value == 0) ? 'orange' : 'gray'}}>تم القبول</Text>
+			</TouchableOpacity>
+			<TouchableOpacity onPress={()=>{
+				if(value == 0){
+					this.change_order_status('1', id);
+					alert('الطلب جاري التوصيل')
+				}
 
-					//console.log(this.state.orderStates);
-					//console.log('old', oldOrderState, 'new', itemValue);
+		}}>
+				<Text style={{textAlign:'center',color:(value == 1) ? 'orange' : 'gray'}}>جاري التوصيل</Text>
+			</TouchableOpacity>
+			<TouchableOpacity onPress={()=>{
+				if(value == 1){
+					this.change_order_status('2', id);
+					alert('تم توصيل الطلب')
+				}
+			}
 
-					if (itemValue == oldOrderState)
-						Alert.alert('لا يمكن تغيير الحالة', 'هذا الطلب بالفعل فى هذه الحالة')
-					else if (itemValue < oldOrderState) {
-						Alert.alert('لا يمكن تغيير الحالة', 'لا يمكنك ارجاع حالة الطلب.')
-						resetText(oldOrderState)
-					}
-					else {
-						//console.log('success')
-						// Make a copy of the order states array
-						let copy_orderStates = [...this.state.orderStates];
-
-						// Make a copy of the target order state
-						let orderState = copy_orderStates[rowNum];
-
-						/// Change order state
-						orderState = itemValue;
-
-						// Update our copy of order states array
-						copy_orderStates[rowNum] = orderState;
-
-						// Update component's state
-						this.setState({ orderStates: copy_orderStates });
-
-						// Send to server
-						this.change_order_status(itemValue, id)
-					}
-				}} >
-				<Option value='0'>تم القبول</Option>
-				<Option value='1'>جاري التوصيل</Option>
-				<Option value='2'>تم التوصيل</Option>
-			</Select>
+		}>
+				<Text style={{textAlign:'center',color:(value == 2) ? 'orange' : 'gray'}}>تم التوصيل</Text>
+			</TouchableOpacity>
+			</View>
 		)
 	};
 	render() {
@@ -421,7 +428,7 @@ onPushNotiOpen = () => {
 		const tableData = [
 			['' + this.state.note, 'الملاحظات'],
 			['' + this.state.details, 'التفاصيل'],
-			['' + this.state.clientName, 'اسم العميل'],
+			['' + this.state.clientName, 'اسم العميل']
 			['' + this.state.phone, 'هاتف العميل'],
 			['' + this.state.price, ' المبلغ الاجمالى'],
 			['' + this.state.discounted, 'المبلغ المخصوم'],
@@ -542,6 +549,44 @@ onPushNotiOpen = () => {
 			return (
 				<View style={{ height: '100%', marginTop: 20 }}>
 					<ScrollView>
+					<View style={{ flex: 1, marginBottom: 15,flexDirection:'row' }}>
+						<Button
+							onPress={() => {
+								this.change_status('1');
+							}}
+							color="white"
+							backgroundColor={Colors.mainColor}
+							borderRadius={15}
+							buttonStyle={{ padding: 10 }}
+							containerViewStyle={{
+								marginTop: 15,
+								marginHorizontal: 7,
+								borderRadius: 15,
+								flex:.5
+
+							}}
+							textStyle={{ fontFamily: 'Droid Arabic Kufi' }}
+							title="فتح المتجر"
+						/>
+						<Button
+							onPress={() => {
+								this.change_status('0');
+							}}
+							color="white"
+							backgroundColor={Colors.mainColor}
+							borderRadius={15}
+							buttonStyle={{ padding: 10 }}
+							containerViewStyle={{
+								marginTop: 15,
+								marginHorizontal: 7,
+								borderRadius: 15,
+								flex:.5
+							}}
+							textStyle={{ fontFamily: 'Droid Arabic Kufi' }}
+							title="غلق المتجر"
+						/>
+					</View>
+
 						<View style={{ flex: 1, marginBottom: 15 }}>
 							<Button
 								onPress={() => {
@@ -639,16 +684,16 @@ onPushNotiOpen = () => {
 							borderStyle={{ borderWidth: 0.5, borderColor: Colors.mainColor }}
 						>
 							<Row
-								data={['بيانات الزبون', 'الموقع', 'السعر', 'التفاصيل', 'الحالة']}
+							data={['بيانات الزبون', 'الموقع', 'التفاصيل', 'الحالة']}
 								style={styles.head}
 								textStyle={styles.headText}
-								flexArr={[2, 2, 1, 2, 2]}
+								flexArr={[2, 2, 2, 2]}
 							/>
 							<Rows
 								data={this.state.orders}
 								style={styles.row}
 								textStyle={styles.text}
-								flexArr={[2, 2, 1, 1, 2]}
+								flexArr={[2, 2, 2, 2]}
 							/>
 						</Table>
 

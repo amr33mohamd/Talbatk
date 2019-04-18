@@ -50,11 +50,11 @@ export default class LocationSetting extends React.Component {
 
 		};
 		AsyncStorage.getItem('location').then(value => {
-			if (value === null) {
+			// if (value === null) {
 				this.loadScreen();
-			} else {
-				this.props.navigation.navigate('Signin', {});
-			}
+			// } else {
+			// 	this.props.navigation.navigate('Signin', {});
+			// }
 		});
 		Saudi_Governorates.regions.map((data) => {
 			this.state.pickerData.push({ value: data, label: data });
@@ -154,13 +154,13 @@ export default class LocationSetting extends React.Component {
 		});
 	}
 	loadScreen = () => {
-		Alert.alert(
-			'خدمة تحديد الموقع',
-			'نستخدم خدمة تحديد الموقع لكي نرسل لك الطلبات اينما تكون فى اقل وقت. من فضلك اضغط تمكين',
-			[
-				{
-					text: 'تمكين',
-					onPress: () => {
+		// Alert.alert(
+		// 	'خدمة تحديد الموقع',
+		// 	'نستخدم خدمة تحديد الموقع لكي نرسل لك الطلبات اينما تكون فى اقل وقت. من فضلك اضغط تمكين',
+		// 	[
+		// 		{
+		// 			text: 'تمكين',
+		// 			onPress: () => {
 						navigator.geolocation.getCurrentPosition(
 							position => {
 								this.setState({
@@ -271,20 +271,20 @@ export default class LocationSetting extends React.Component {
 							}
 						);
 						this.setState({ display: 1 });
-					}
-				},
-				{
-					text: 'الغاء',
-					onPress: () =>{
-						this.props.navigation.navigate('Main');
-
-						alert('عليك بتفعيل خدمة الموقع على جهازك لكي تستخدم التطبيق')
-					},
-					style: 'cancel'
-				}
-			],
-			{ cancelable: false }
-		);
+		// 			}
+		// 		},
+		// 		{
+		// 			text: 'الغاء',
+		// 			onPress: () =>{
+		// 				this.props.navigation.navigate('Main');
+		//
+		// 				alert('عليك بتفعيل خدمة الموقع على جهازك لكي تستخدم التطبيق')
+		// 			},
+		// 			style: 'cancel'
+		// 		}
+		// 	],
+		// 	{ cancelable: false }
+		// );
 	};
 
 	shouldRenderLocationInputs = () => {
@@ -295,9 +295,6 @@ export default class LocationSetting extends React.Component {
 
 					<MapView
 						style={{ flex: 1 }}
-						showsUserLocation={true}
-						followsUserLocation={true}
-						showsMyLocationButton={true}
 						zoomEnabled={true}
 						initialRegion={{
 							latitude: this.state.pos.lat,
