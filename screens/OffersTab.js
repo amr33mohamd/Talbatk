@@ -73,6 +73,12 @@ export default class OffersTab extends React.Component {
 		};
 	}
 
+	navigate_home = (key,status,stars,name,time,desc,image,deliver_price,min_delivery_price) => {
+
+		this.props.navigation.navigate('CategoriesScreen', { key,status,stars,name,time,desc,image,deliver_price,min_delivery_price })
+
+	}
+
 	_keyExtractor = (item) => String(item.id);
 
 	render() {
@@ -92,7 +98,7 @@ export default class OffersTab extends React.Component {
 					data={this.state.offers}
 					renderItem={({ item }) => (
 						<TouchableOpacity
-
+						onPress={()=>this.navigate_home(item.resturant.key,item.resturant.status,item.resturant.stars,item.resturant.name,item.resturant.time,item.resturant.desc,item.resturant.image,item.resturant.deliver_price,item.resturant.min_delivery_cost)}
 						>
 							<OfferBox
 								style={styles.restaurant}

@@ -14,7 +14,8 @@ import {
 	TouchableOpacity,
 	Share,
 	Alert,
-	FlatList
+	FlatList,
+	Linking
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { Table, Row, Rows } from 'react-native-table-component';
@@ -327,6 +328,9 @@ onPushNotiOpen = () => {
 			})
 
 	}
+	open_order = ()=>{
+		Linking.openURL('http://talbatkapp.com:90/share-order-data?id=' + this.state.orderId)
+	}
 	location = (value) => (
 
 		<TouchableOpacity onPress={() => {
@@ -627,6 +631,12 @@ onPushNotiOpen = () => {
 											}} style={{ width: 350, backgroundColor: Colors.mainColor, justifyContent: 'center', alignItems: 'center', color: 'white', padding: 10, marginRight: 20, marginBottom: 20, marginTop: 20 }} >
 												<Text style={{ textAlign: 'center', justifyContent: 'center', alignItems: 'center', color: 'white' }}>مشاركه الطلب</Text>
 											</TouchableOpacity>
+											<TouchableOpacity onPress={() => {
+												this.open_order()
+											}} style={{ width: 350, backgroundColor: Colors.mainColor, justifyContent: 'center', alignItems: 'center', color: 'white', padding: 10, marginRight: 20, marginBottom: 20, marginTop: 20 }} >
+												<Text style={{ textAlign: 'center', justifyContent: 'center', alignItems: 'center', color: 'white' }}>طباعه فاتوره</Text>
+											</TouchableOpacity>
+
 											<Table
 												borderStyle={{
 													borderWidth: 0.5,

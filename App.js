@@ -17,25 +17,25 @@ export default class App extends Component {
 		this.notificationListener();
 		// this.resetNotiOpen()
 	  }
-	  
+
 		  componentDidMount() {
 			SplashScreen.hide()
 			  this.notificationPermission();
-	  
+
 			  firebase.notifications().getInitialNotification()
 				.then((notificationOpen: NotificationOpen) => {
 				if (notificationOpen) {
-							
+
 				}
 			});
-	  
+
 			  // notification listner
 			  this.pushNotiListner()
-	  
+
 			  // notification open
 			  this.onPushNotiOpen();
 		  }
-	  
+
 		  notificationPermission = () => {
 			  firebase.messaging().hasPermission()
 			  .then(enabled => {
@@ -47,15 +47,15 @@ export default class App extends Component {
 					  console.log('No permission yet, Requesting...')
 					  firebase.messaging().requestPermission()
 					  .then(() => {
-						  // User has authorised  
+						  // User has authorised
 						  console.log('Permission granted.')
 					  })
 					  .catch(error => {
-						  // User has rejected permissions  
+						  // User has rejected permissions
 						  console.log('permission denied')
 						  console.log(error)
 					  });
-				  } 
+				  }
 			  });
 	  }
 	  pushNotiListner = () => {
@@ -63,6 +63,9 @@ export default class App extends Component {
 		  // Process your notification as required
 		  console.log('three')
 		  console.log(notification)
+			const { title, body } = notification;
+
+			alert(JSON.stringify(body))
 		  // Display the notification
 		  notification.android.setChannelId('test-channel');
 		  firebase.notifications().displayNotification(notification)
@@ -83,8 +86,8 @@ export default class App extends Component {
 		  const notification: Notification = notificationOpen.notification;
 		});
 	  }
-	  
+
 	render() {
 		return <RootNavigation />
 	}
-} 
+}

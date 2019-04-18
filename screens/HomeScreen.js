@@ -4,7 +4,8 @@ import {
 	StyleSheet,
 	FlatList,
 	TouchableOpacity,
-	AsyncStorage
+	AsyncStorage,
+	Text
 } from 'react-native';
 import RestaurantBox from '../components/RestaurantBox';
 import Colors from '../constants/Colors';
@@ -217,7 +218,7 @@ export default class HomeScreen extends React.Component {
 
 
 	render() {
-		if (this.state.Restaurants.length < 1)
+		if (this.state.isFetching == true)
 			return <LoadingIndicator size="large" color="#B6E3C6" />;
 
 		return (
@@ -229,6 +230,12 @@ export default class HomeScreen extends React.Component {
 					removeClippedSubviews={false}
 					ItemSeparatorComponent={() => (
 						<View style={{ height: 5, backgroundColor: Colors.smoothGray }} />
+					)}
+					ListEmptyComponent={()=>(
+						<View style={{justifyContent:'center',alignItems:'center',height:400}}>
+						<Text style={{textAlign:'center',fontSize:20,		fontFamily: 'Droid Arabic Kufi',
+}}>لا يوجد محلات قريبه منك الان</Text>
+						</View>
 					)}
 					data={this.state.Restaurants}
 					onEndReachedThreshold={0.5}
@@ -255,6 +262,7 @@ export default class HomeScreen extends React.Component {
 						</TouchableOpacity>
 					)}
 				/>
+
 			</View>
 		);
 	}

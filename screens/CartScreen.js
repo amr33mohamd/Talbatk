@@ -214,6 +214,8 @@ deleteProduct = (value) =>{
 			if(cart.replace(new RegExp(','+value,'g' ), '') == 'null'){
 				AsyncStorage.setItem('cart','').then(()=>{
 					AsyncStorage.setItem('CartResturantId','').then(()=>{
+						this.doTheFetching();
+
 						this.props.navigation.navigate('Main');
 						// alert(cart.replace(new RegExp(','+value,'g' ), ''))
 					});
@@ -222,8 +224,8 @@ deleteProduct = (value) =>{
 			}
 			else {
 				AsyncStorage.setItem('cart',''+cart.replace(new RegExp(','+value,'g' ), '')).then(()=>{
-					this.props.navigation.navigate('السله');
-					DeviceEventEmitter.emit('ReloadMyLibraryBooks', { empty: 0 });
+					// this.props.navigation.navigate('السله');
+					this.doTheFetching();
 
 				});
 			}
