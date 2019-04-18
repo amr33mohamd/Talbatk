@@ -60,7 +60,7 @@ export default class Intro extends React.Component {
 
 			tabs: [{
 				key: '1',
-				screenName: 'المحلات التجارية',
+				screenName: 'المطاعم و المحلات',
 				to: 'Home',
 				id: 1
 			},
@@ -71,19 +71,19 @@ export default class Intro extends React.Component {
 				id: 1
 			}, {
 				key: '3',
-				screenName: 'خدمات طلباتك',
-				to: 'Home',
+				screenName: 'العروض و الاعلانات',
+				to: 'offers',
 				id: 2
 			},
 			{
 				key: '4',
-				screenName: 'المتاجر الشخصية',
-				to: 'Home',
+				screenName: 'متابعه الطلبات',
+				to: 'follow',
 				id: 3
 			}, {
 				key: '5',
-				screenName: 'الأسر المنتجة',
-				to: 'Home',
+				screenName: 'تواصل معنا',
+				to: 'ticket',
 				id: 4
 			}],
 			SpecialOrderStatus: 0,
@@ -220,9 +220,20 @@ export default class Intro extends React.Component {
 								if (this.state.SpecialOrderStatus == 0) {
 									alert('الخدمه متوقفه الان')
 								}
+
 								else {
 									this.props.navigation.navigate('SpecialOrderScreen')
 								}
+							}
+							else if (item.to == 'offers') {
+								this.props.navigation.navigate('العروض')
+
+							}
+							else if (item.to == 'follow') {
+								this.props.navigation.navigate('طلبات')
+							}
+							else if (item.to == 'ticket') {
+								this.props.navigation.navigate('MyTicketsScreen')
 							}
 							else {
 								navigate(item.to, { id: item.id })

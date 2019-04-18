@@ -11,13 +11,15 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
-	PermissionsAndroid
+	PermissionsAndroid,
+	SafeAreaView
 } from 'react-native';
 import Colors from '../constants/Colors';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Saudi_Governorates from '../constants/Saudi_Governorates.js';
 import SelectInput from 'react-native-select-input-ios';
 import Server from '../constants/server';
+import marker from '../assets/icons8-marker.png'
 
 export default class LocationSetting extends React.Component {
 	static navigationOptions = {
@@ -71,9 +73,9 @@ export default class LocationSetting extends React.Component {
 	set_location = (location) => {
 		fetch(
 			'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
-			location.coordinate.latitude +
+			location.latitude +
 			',' +
-			location.coordinate.longitude +
+			location.longitude +
 			'&language=ar&key=AIzaSyCxXoRqTcOTvsOLQPOiVtPnSxLUyGJBFqw',
 			{ headers: { 'Cache-Control': 'no-cache' } }
 		)
@@ -87,8 +89,8 @@ export default class LocationSetting extends React.Component {
 			});
 		this.setState({
 			pos: {
-				lat: location.coordinate.latitude,
-				long: location.coordinate.longitude
+				lat: location.latitude,
+				long: location.longitude
 			}
 		})
 
@@ -289,57 +291,8 @@ export default class LocationSetting extends React.Component {
 		if (this.state.fetchedLocationData) {
 			return (
 				<View style={{ flex: 1 }}>
-					<View
-						style={{
-							flex: 0.1,
-							backgroundColor: Colors.mainColor,
-							borderWidth: 0,
-							marginTop: 10
-						}}
-					>
 
 
-						<SelectInput
-							buttonsBackgroundColor={Colors.smoothGray}
-							buttonsTextColor={Colors.mainColor}
-							cancelKeyText="الغاء"
-							submitKeyText="اختيار"
-							value={this.state.country}
-							options={this.state.pickerData}
-							labelStyle={{ color: Colors.secondaryColor, textAlign: 'center' }}
-							onSubmitEditing={itemValue =>
-								this.setState({ region: itemValue })
-							}
-						/>
-					</View>
-					<View style={styles.box}>
-						<TextInput
-							placeholderTextColor="#999999"
-
-							underlineColorAndroid="transparent"
-							style={styles.input}
-							placeholder="اكتب عنوانك"
-							minLength={2}
-							autoFocus={false}
-							editable={false}
-							listViewDisplayed="auto"
-							fetchDetails={false}
-							value={this.state.region}
-							onChangeText={(text) => {
-								this.setState({
-									region: text
-								})
-							}}
-							onSubmitEditing={() => {
-								this.submit_location();
-							}}
-						/>
-					</View>
-					<TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }} onPress={() => this.submit_location()}>
-						<View style={{ backgroundColor: Colors.mainColor, padding: 10, borderRadius: 10, width: 120, justifyContent: 'center' }}>
-							<Text style={{ marginBottom: 6, fontFamily: 'Droid Arabic Kufi', color: Colors.secondaryColor, textAlign: 'center' }}>حفظ العنوان</Text>
-						</View>
-					</TouchableOpacity>
 					<MapView
 						style={{ flex: 1 }}
 						showsUserLocation={true}
@@ -352,21 +305,48 @@ export default class LocationSetting extends React.Component {
 							longitudeDelta: 0.04250270688370961,
 							latitudeDelta: 0.03358723958820065
 
-						}}>
-						<MapView.Marker
-							coordinate={{
-								latitude: this.state.pos.lat,
-								longitude: this.state.pos.long
-							}}
-							onDragEnd={(e) => {
-								this.set_location(e.nativeEvent);
+						}}
+						onRegionChangeComplete={(location)=>{
+							this.set_location(location)
+						}}/>
 
-							}
-							}
-							draggable
-							title={this.state.region}
-						/>
-					</MapView>
+
+					<View style={styles.markerFixed}>
+	<Image style={styles.marker} source={marker} />
+</View>
+<SafeAreaView style={styles.footer}>
+<View style={styles.box}>
+	<TextInput
+		placeholderTextColor="#999999"
+
+		underlineColorAndroid="transparent"
+		style={styles.input}
+		placeholder="اكتب عنوانك"
+		minLength={2}
+		autoFocus={false}
+		editable={true}
+		listViewDisplayed="auto"
+		fetchDetails={false}
+		value={this.state.region}
+		onChangeText={(text) => {
+			this.setState({
+				region: text
+			})
+		}}
+		multiline={true}
+
+		onSubmitEditing={() => {
+			this.submit_location();
+		}}
+	/>
+</View>
+<TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }} onPress={() => this.submit_location()}>
+	<View style={{ backgroundColor: Colors.mainColor, padding: 10, borderRadius: 10, width: 120, justifyContent: 'center' }}>
+		<Text style={{ marginBottom: 6, fontFamily: 'Droid Arabic Kufi', color: Colors.secondaryColor, textAlign: 'center' }}>حفظ العنوان</Text>
+	</View>
+</TouchableOpacity>
+</SafeAreaView>
+
 				</View>
 			);
 		}
@@ -383,17 +363,14 @@ export default class LocationSetting extends React.Component {
 					marginTop: Platform.OS == 'ios' ? 15 : 0
 				}}
 			>
+
 				<KeyboardAvoidingView
 					behavior="padding"
 					keyboardVerticalOffset={60}
 					style={{ flex: 1 }}
 					contentContainerStyle={{ flex: 1 }}
 				>
-					<Image
-						style={{ width: '100%', height: '34%' }}
-						resizeMode="cover"
-						source={require('../assets/images/head.jpg')}
-					/>
+
 
 					{this.shouldRenderLocationInputs()}
 				</KeyboardAvoidingView>
@@ -412,11 +389,12 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginRight: 7,
 		marginLeft: 7,
+		height:100,
 
 		flex: 1
 	},
 	box: {
-		height: 45,
+		height: 100,
 		backgroundColor: Colors.smoothGray,
 		borderRadius: 9,
 		flexDirection: 'row',
@@ -425,5 +403,30 @@ const styles = StyleSheet.create({
 		marginVertical: 12,
 		marginHorizontal: 10
 	},
+	map: {
+    flex: 1
+  },
+  markerFixed: {
+    left: '50%',
+    marginLeft: -24,
+    marginTop: -48,
+    position: 'absolute',
+    top: '50%'
+  },
+  marker: {
+    height: 48,
+    width: 48
+  },
+  footer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    bottom: 0,
+    position: 'absolute',
+    width: '100%'
+  },
+  region: {
+    color: '#fff',
+    lineHeight: 20,
+    margin: 20
+  }
 
 })
